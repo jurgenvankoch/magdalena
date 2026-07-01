@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Schöckl mit dir? ⛰️</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;
+--muted:#7d8590;--green:#3fb950;--green-dim:#1a3a1f;--blue:#58a6ff;
+--red:#f85149;--red-dim:#3a1010;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);
+min-height:100vh;display:flex;flex-direction:column;align-items:center;
+justify-content:center;padding:2rem 1rem 4rem;color-scheme:dark;}
+.container{max-width:480px;width:100%;}
+.screen{display:none;}
+.screen.active{display:block;}
+
+.repo-path{font-family:'JetBrains Mono',monospace;font-size:.72rem;
+color:var(--muted);margin-bottom:1.6rem;letter-spacing:.05em;text-align:center;}
+.repo-path span{color:var(--blue);}
+
+.card{background:var(--surface);border:1px solid var(--border);
+border-radius:14px;padding:2.2rem 1.8rem;}
+.center{text-align:center;}
+.emoji{font-size:3.2rem;display:block;margin-bottom:1rem;
+animation:float 2.8s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+.title{font-size:1.2rem;font-weight:700;line-height:1.4;margin-bottom:.6rem;}
+.sub{font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:1.8rem;}
+
+.btn{font-family:'Inter',sans-serif;font-size:.92rem;font-weight:600;
+padding:.8rem 1.9rem;border-radius:9px;border:1px solid #238636;
+background:var(--green-dim);color:var(--green);cursor:pointer;transition:all .15s;width:100%;}
+.btn:hover{background:#1f4a26;}
+
+.mini{display:inline-block;margin-top:1.3rem;font-family:'JetBrains Mono',monospace;
+font-size:.68rem;color:var(--muted);background:none;border:none;cursor:pointer;
+text-decoration:underline;text-underline-offset:3px;}
+.info{font-size:.78rem;color:var(--muted);line-height:1.6;
+max-height:0;overflow:hidden;transition:max-height .3s ease,margin .3s ease,opacity .3s ease;opacity:0;}
+.info.open{max-height:120px;margin-top:1rem;opacity:1;}
+
+.q{font-size:.9rem;font-weight:500;margin:0 0 .6rem;}
+.field{margin-bottom:1.5rem;}
+input[type=date],input[type=time],input[type=text]{
+width:100%;font-family:'Inter',sans-serif;font-size:.95rem;color:var(--text);
+background:var(--bg);border:1px solid var(--border);border-radius:9px;
+padding:.75rem .9rem;transition:border-color .15s;}
+input:focus{outline:none;border-color:var(--blue);}
+input::placeholder{color:#565f6b;}
+
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.7rem;}
+.chip{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:500;
+padding:.5rem .9rem;border-radius:20px;border:1px solid var(--border);
+background:var(--bg);color:var(--muted);cursor:pointer;transition:all .15s;}
+.chip:hover{border-color:var(--muted);color:var(--text);}
+.chip.active{border-color:#238636;background:var(--green-dim);color:var(--green);}
+
+.tiny{font-size:.74rem;color:var(--muted);margin-bottom:.55rem;}
+
+.submit{width:100%;margin-top:.4rem;font-family:'Inter',sans-serif;font-size:.98rem;
+font-weight:700;background:var(--green-dim);border:1px solid #238636;border-radius:11px;
+color:var(--green);padding:1rem;cursor:pointer;transition:all .15s;}
+.submit:hover{background:#1f4a26;}
+.submit:disabled{opacity:.45;cursor:not-allowed;}
+
+.warn{font-size:.76rem;color:var(--red);text-align:center;margin-top:.7rem;min-height:1rem;}
+
+.summary{font-family:'JetBrains Mono',monospace;background:var(--bg);
+border:1px solid var(--border);border-radius:9px;padding:1rem;margin:.4rem 0 1.3rem;
+font-size:.85rem;line-height:1.7;text-align:left;}
+.summary .k{color:var(--muted);}
+.summary .v{color:var(--green);}
+
+.back{background:none;border:none;color:var(--muted);font-family:'JetBrains Mono',monospace;
+font-size:.72rem;cursor:pointer;margin-top:1.1rem;text-decoration:underline;text-underline-offset:3px;}
+.back:hover{color:var(--text);}
+
+.footer{font-family:'JetBrains Mono',monospace;font-size:.63rem;color:var(--muted);
+text-align:center;margin-top:1.4rem;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.fade{animation:fadeIn .35s ease both;}
+@keyframes pop{0%{transform:scale(0);}70%{transform:scale(1.15);}100%{transform:scale(1);}}
+.pop{animation:pop .45s cubic-bezier(.36,.07,.19,.97);}
+@media (prefers-reduced-motion:reduce){.emoji,.fade,.pop{animation:none;}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- S1 -->
+  <div id="s1" class="screen active">
+    <div class="repo-path">~ / <span>Leni</span> 🦷 / schoeckl</div>
+    <div class="card center">
+      <span class="emoji">⛰️</span>
+      <div class="title">Schöckl mit dir? 🙂</div>
+      <div class="sub">hätt echt lust mit dir raufzugehn.<br>
+      am liebsten am nachmittag — dann schaun wir<br>oben den sonnenuntergang an 🌅</div>
+      <button class="btn" onclick="show('s2')">wann hast du zeit? 📅</button>
+      <br>
+      <button class="mini" onclick="toggleInfo()">was ist der Schöckl nochmal? 🤔</button>
+      <div id="info" class="info">grazer hausberg, 1445 m. schöne aussicht, gute wege,
+      oben ne hütte. easy erreichbar.</div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div id="s2" class="screen">
+    <div class="repo-path">~ / <span>Leni</span> 🦷 / <span>termin</span></div>
+    <div class="card">
+
+      <div class="field">
+        <p class="q">welcher tag passt dir?</p>
+        <input type="date" id="date" oninput="validate()"/>
+      </div>
+
+      <div class="field">
+        <p class="q">und wann ungefähr?</p>
+        <p class="tiny">nachmittag wär mir am liebsten 🙂</p>
+        <div class="chips" id="times">
+          <button type="button" class="chip" data-t="14:00" onclick="pickT(this)">14:00</button>
+          <button type="button" class="chip" data-t="15:00" onclick="pickT(this)">15:00 · gmütlich</button>
+          <button type="button" class="chip" data-t="16:00" onclick="pickT(this)">16:00</button>
+          <button type="button" class="chip" data-t="17:00" onclick="pickT(this)">17:00 · für'n Sonnenuntergang 🌅</button>
+        </div>
+        <input type="time" id="time" oninput="onTimeInput()"/>
+      </div>
+
+      <div class="field">
+        <p class="q">picknick mitnehmen? 🧺</p>
+        <div class="chips" id="picnic">
+          <button type="button" class="chip" data-p="ja, mit Picknick + Sonnenuntergang" onclick="pickP(this)">ja, unbedingt 🧺🌅</button>
+          <button type="button" class="chip" data-p="lieber die Hütte" onclick="pickP(this)">lieber die Hütte 🏔️</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <p class="q">noch was? <span style="color:var(--muted);font-weight:400;">(optional)</span></p>
+        <input type="text" id="note" maxlength="120" placeholder="z.B. Käse / Kernöl / Tequila? 🙂"/>
+      </div>
+
+      <button class="submit" id="send" disabled onclick="send()">schick's mir 🙂</button>
+      <div class="warn" id="warn"></div>
+      <div class="center"><button class="back" onclick="show('s1')">← zurück</button></div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div id="s3" class="screen">
+    <div class="card center">
+      <span class="emoji pop">🌅</span>
+      <div class="title">perfekt 🙂</div>
+      <div class="summary" id="summary"></div>
+      <div class="sub" style="margin-bottom:1.1rem;">ich hab's bekommen — freu mich drauf ⛰️</div>
+      <button class="back" onclick="show('s2')">← doch was ändern</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ENDPOINT = "https://formspree.io/f/xaqgpvrg";
+
+let chosen = { date:"", time:"", picnic:"", note:"", dateLabel:"" };
+
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active','fade'));
+  const el=document.getElementById(id);
+  el.classList.add('active','fade');
+  window.scrollTo(0,0);
+}
+function toggleInfo(){ document.getElementById('info').classList.toggle('open'); }
+
+function pickT(btn){
+  document.querySelectorAll('#times .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('time').value = btn.dataset.t;
+  validate();
+}
+function onTimeInput(){
+  const t = document.getElementById('time').value;
+  document.querySelectorAll('#times .chip').forEach(c=>c.classList.toggle('active', c.dataset.t===t));
+  validate();
+}
+function pickP(btn){
+  document.querySelectorAll('#picnic .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  chosen.picnic = btn.dataset.p;
+}
+
+function fmtDate(str){
+  const d = new Date(str + 'T00:00');
+  return d.toLocaleDateString('de-AT',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+function validate(){
+  const ok = !!document.getElementById('date').value && !!document.getElementById('time').value;
+  document.getElementById('send').disabled = !ok;
+  if(ok) document.getElementById('warn').textContent = '';
+  return ok;
+}
+
+async function send(){
+  if(!validate()){ document.getElementById('warn').textContent='bitte tag und uhrzeit auswählen 🙂'; return; }
+
+  chosen.date  = document.getElementById('date').value;
+  chosen.time  = document.getElementById('time').value;
+  chosen.note  = document.getElementById('note').value.trim();
+  chosen.dateLabel = fmtDate(chosen.date);
+
+  const btn = document.getElementById('send');
+  btn.disabled = true; const old = btn.textContent; btn.textContent = 'wird gesendet…';
+  document.getElementById('warn').textContent = '';
+
+  try{
+    const form = new FormData();
+    form.append('Tag', chosen.dateLabel);
+    form.append('Uhrzeit', chosen.time + ' Uhr');
+    form.append('Picknick', chosen.picnic || '(nicht angegeben)');
+    if(chosen.note) form.append('Notiz', chosen.note);
+    form.append('_subject', 'Schöckl-Termin von Leni ⛰️');
+
+    const res = await fetch(ENDPOINT, { method:'POST', headers:{'Accept':'application/json'}, body:form });
+    if(res.ok){
+      document.getElementById('summary').innerHTML =
+        `<span class="k">tag:</span>  <span class="v">${chosen.dateLabel}</span><br>`+
+        `<span class="k">zeit:</span> <span class="v">${chosen.time} Uhr</span>`+
+        (chosen.picnic ? `<br><span class="k">plan:</span> <span class="v">${escapeHtml(chosen.picnic)}</span>` : '')+
+        (chosen.note ? `<br><span class="k">notiz:</span> <span class="v">${escapeHtml(chosen.note)}</span>` : '');
+      show('s3');
+    } else { throw new Error('Server '+res.status); }
+  } catch(e){
+    document.getElementById('warn').textContent='hat nicht geklappt — nochmal probieren?';
+  } finally {
+    btn.disabled=false; btn.textContent=old;
+  }
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+document.getElementById('date').min = new Date().toISOString().split('T')[0];
+</script>
+</body>
+</html>
