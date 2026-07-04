@@ -36,6 +36,12 @@ animation:float 2.8s ease-in-out infinite;}
 padding:.8rem 1.9rem;border-radius:9px;border:1px solid #238636;
 background:var(--green-dim);color:var(--green);cursor:pointer;transition:all .15s;width:100%;}
 .btn:hover{background:#1f4a26;}
+.btn-no{margin-top:.7rem;width:100%;font-family:'Inter',sans-serif;font-size:.85rem;
+font-weight:500;padding:.7rem;border-radius:9px;border:1px solid var(--border);
+background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;}
+.btn-no:hover{border-color:var(--red);color:var(--red);}
+.ps{font-family:'JetBrains Mono',monospace;font-size:.68rem;color:var(--muted);
+line-height:1.6;margin-top:1.4rem;font-style:italic;}
 
 .mini{display:inline-block;margin-top:1.3rem;font-family:'JetBrains Mono',monospace;
 font-size:.68rem;color:var(--muted);background:none;border:none;cursor:pointer;
@@ -102,6 +108,7 @@ text-align:center;margin-top:1.4rem;}
       <div class="sub">hätt echt lust mit dir raufzugehn.<br>
       am liebsten am nachmittag — dann schaun wir<br>oben den sonnenuntergang an 🌅</div>
       <button class="btn" onclick="show('s2')">wann hast du zeit? 📅</button>
+      <button class="btn-no" onclick="rejectClick()">nein du nervst 🙄</button>
       <br>
       <button class="mini" onclick="toggleInfo()">was ist der Schöckl nochmal? 🤔</button>
       <div id="info" class="info">grazer hausberg, 1445 m. schöne aussicht, gute wege,
@@ -140,6 +147,22 @@ text-align:center;margin-top:1.4rem;}
       </div>
 
       <div class="field">
+        <p class="q">4-beinige begleitung? 🐕</p>
+        <div class="chips" id="dog">
+          <button type="button" class="chip" data-d="ja, Hund kommt mit" onclick="pickD(this)">ja, unbedingt 🐾</button>
+          <button type="button" class="chip" data-d="nur wir zwei" onclick="pickD(this)">nur wir zwei 🙂</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <p class="q">vorher zusammen einkaufen gehen? 🛒</p>
+        <div class="chips" id="shop">
+          <button type="button" class="chip" data-s="ja, vorher einkaufen" onclick="pickS(this)">ja, gute idee 🛒</button>
+          <button type="button" class="chip" data-s="brauch ma nicht — Jürgen macht das schon" onclick="pickS(this)">brauch ma nicht, du machst das schon 🙂</button>
+        </div>
+      </div>
+
+      <div class="field">
         <p class="q">noch was? <span style="color:var(--muted);font-weight:400;">(optional)</span></p>
         <input type="text" id="note" maxlength="120" placeholder="z.B. Käse / Kernöl / Tequila? 🙂"/>
       </div>
@@ -157,7 +180,20 @@ text-align:center;margin-top:1.4rem;}
       <div class="title">perfekt 🙂</div>
       <div class="summary" id="summary"></div>
       <div class="sub" style="margin-bottom:1.1rem;">ich hab's bekommen — freu mich drauf ⛰️</div>
+      <p class="ps">p.s. die LSF 50 hab ich schon eingepackt —<br>weiß ja, wie gern du dich einschmierst 😏</p>
       <button class="back" onclick="show('s2')">← doch was ändern</button>
+    </div>
+  </div>
+
+  <!-- S4: freche Absage -->
+  <div id="s4" class="screen">
+    <div class="card center">
+      <span class="emoji">🙃</span>
+      <div class="title">na gut.</div>
+      <div class="sub">aber DAS musst du mir dann schon<br>
+      persönlich sagen — nicht per website 😌<br><br>
+      ich warte 🙂</div>
+      <button class="btn" onclick="show('s1')">ok ok, war nur spaß ←</button>
     </div>
   </div>
 
@@ -166,7 +202,7 @@ text-align:center;margin-top:1.4rem;}
 <script>
 const ENDPOINT = "https://formspree.io/f/xaqgpvrg";
 
-let chosen = { date:"", time:"", picnic:"", note:"", dateLabel:"" };
+let chosen = { date:"", time:"", picnic:"", dog:"", shop:"", note:"", dateLabel:"" };
 
 function show(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active','fade'));
@@ -175,6 +211,19 @@ function show(id){
   window.scrollTo(0,0);
 }
 function toggleInfo(){ document.getElementById('info').classList.toggle('open'); }
+
+let noSent = false;
+async function rejectClick(){
+  show('s4');
+  if(noSent) return;
+  noSent = true;
+  try{
+    const f = new FormData();
+    f.append('Antwort', 'Leni hat auf "nein du nervst" geklickt 🙄');
+    f.append('_subject', 'Schöckl: nein du nervst 🙄');
+    await fetch(ENDPOINT, { method:'POST', headers:{'Accept':'application/json'}, body:f });
+  }catch(e){ /* nicht schlimm */ }
+}
 
 function pickT(btn){
   document.querySelectorAll('#times .chip').forEach(c=>c.classList.remove('active'));
@@ -191,6 +240,16 @@ function pickP(btn){
   document.querySelectorAll('#picnic .chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
   chosen.picnic = btn.dataset.p;
+}
+function pickD(btn){
+  document.querySelectorAll('#dog .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  chosen.dog = btn.dataset.d;
+}
+function pickS(btn){
+  document.querySelectorAll('#shop .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  chosen.shop = btn.dataset.s;
 }
 
 function fmtDate(str){
@@ -221,6 +280,8 @@ async function send(){
     form.append('Tag', chosen.dateLabel);
     form.append('Uhrzeit', chosen.time + ' Uhr');
     form.append('Picknick', chosen.picnic || '(nicht angegeben)');
+    form.append('Begleitung', chosen.dog || '(nicht angegeben)');
+    form.append('Einkaufen', chosen.shop || '(nicht angegeben)');
     if(chosen.note) form.append('Notiz', chosen.note);
     form.append('_subject', 'Schöckl-Termin von Leni ⛰️');
 
@@ -230,6 +291,8 @@ async function send(){
         `<span class="k">tag:</span>  <span class="v">${chosen.dateLabel}</span><br>`+
         `<span class="k">zeit:</span> <span class="v">${chosen.time} Uhr</span>`+
         (chosen.picnic ? `<br><span class="k">plan:</span> <span class="v">${escapeHtml(chosen.picnic)}</span>` : '')+
+        (chosen.dog ? `<br><span class="k">hund:</span> <span class="v">${escapeHtml(chosen.dog)}</span>` : '')+
+        (chosen.shop ? `<br><span class="k">einkauf:</span> <span class="v">${escapeHtml(chosen.shop)}</span>` : '')+
         (chosen.note ? `<br><span class="k">notiz:</span> <span class="v">${escapeHtml(chosen.note)}</span>` : '');
       show('s3');
     } else { throw new Error('Server '+res.status); }
